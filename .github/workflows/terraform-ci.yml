@@ -12,7 +12,7 @@ env:
 
 jobs:
   terraform-check:
-    name: Terraform Config Check
+    name: Terraform CI Checks (fmt + validate)
     runs-on: ubuntu-latest
 
     defaults:
@@ -28,15 +28,15 @@ jobs:
         with:
           terraform_version: 1.6.6
 
-      - name: Debug - Terraform Environment
+      - name: Debug - Terraform Version
+        run: terraform version
+
+      - name: Debug - Working Directory
         run: |
-          echo "================ Terraform Debug ================"
-          terraform version
-          echo "Working directory:"
+          echo "PWD:"
           pwd
-          echo "TF env vars:"
-          env | grep '^TF_' || true
-          echo "================================================"
+          echo "Files:"
+          ls -la
 
       - name: Debug - Terraform Cloud Token
         run: |
@@ -48,102 +48,31 @@ jobs:
             echo "✅ TF_TOKEN_app_terraform_io is set (masked)"
           fi
 
-      # 🔥 CRITICAL: Fix provider + lockfile cache issues
-      - name: Clean Terraform cache
+      - name: Debug - backend.tf
+        run: |
+          echo "🔎 Showing backend.tf"
+          sed -n '1,200p' backend.tf
+
+      # Optional — only needed when provider source errors happen
+      - name: Clean Terraform cache (optional)
         run: |
           echo "🧹 Cleaning Terraform cache..."
           rm -rf .terraform
           rm -f .terraform.lock.hcl
 
-      - name: Debug - backend.tf
-        run: |
-          echo "🔎 Showing backend.tf"
-          if [ -f backend.tf ]; then
-            sed -n '1,200p' backend.tf
-          else
-            echo "❌ backend.tf NOT found in terraform directory"
-            ls -la
-            exit 1
-          fi
-
-      - name: Terraform Init
+      - name: Terraform Init (Terraform Cloud)
         run: terraform init -input=false -upgrade
 
-      - name: Terraform Format (Auto-Check)
-        run: terraform fmt  -recursive
+      - name: Terraform Format Check
+        run: terraform fmt -check -recursive
 
       - name: Terraform Validate
         run: terraform validate
 
-  terraform-plan:
-    name: Terraform Plan (Dry Run Validation)
-    runs-on: ubuntu-latest
-    needs: terraform-check
-
-    defaults:
-      run:
-        working-directory: terraform
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: 1.6.6
-
-      - name: Debug - Terraform Environment
-        run: |
-          echo "================ Terraform Debug ================"
-          terraform version
-          echo "Working directory:"
-          pwd
-          echo "TF env vars:"
-          env | grep '^TF_' || true
-          echo "================================================"
-
-      - name: Debug - Terraform Cloud Token
-        run: |
-          echo "🔎 Checking Terraform Cloud token..."
-          if [ -z "$TF_TOKEN_app_terraform_io" ]; then
-            echo "❌ TF_TOKEN_app_terraform_io is NOT set"
-            exit 1
-          else
-            echo "✅ TF_TOKEN_app_terraform_io is set (masked)"
-          fi
-
-      # 🔥 CRITICAL: Clean again for second job
-      - name: Clean Terraform cache
-        run: |
-          echo "🧹 Cleaning Terraform cache..."
-          rm -rf .terraform
-          rm -f .terraform.lock.hcl
-
-      - name: Debug - backend.tf
-        run: |
-          echo "🔎 Showing backend.tf"
-          if [ -f backend.tf ]; then
-            sed -n '1,200p' backend.tf
-          else
-            echo "❌ backend.tf NOT found in terraform directory"
-            ls -la
-            exit 1
-          fi
-
-      - name: Terraform Init
-        run: terraform init -input=false -upgrade
-
-      - name: Terraform Providers Debug
-        run: terraform providers
-
-      - name: Terraform Plan (Dry Run)
-        run: terraform plan -input=false
-
       - name: CI Final Status
         run: |
           echo "======================================"
-          echo "✅ Terraform validation and plan SUCCESS"
-          echo "🚀 Apply will be executed by Terraform Cloud"
+          echo "✅ Terraform validation SUCCESS"
+          echo "🚀 Plan & Apply will be executed by Terraform Cloud"
           echo "📡 Waiting for Terraform Cloud auto-apply"
           echo "======================================"
