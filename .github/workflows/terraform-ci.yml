@@ -7,19 +7,16 @@ on:
 
 jobs:
   terraform:
-    name: Terraform CI
     runs-on: ubuntu-latest
 
-    steps:
+    defaults:
+      run:
+        working-directory: terraform   
 
-      # Step 0 — Checkout Code
- 
+    steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-
-      # Step 1 — Terraform Validation
-     
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
@@ -32,9 +29,6 @@ jobs:
       - name: Terraform Validate
         run: terraform validate
 
-     
-      # Step 2 — Test After Validation
-     
       - name: Terraform Plan (Speculative Test)
         run: terraform plan -input=false
 
