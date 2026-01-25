@@ -1,6 +1,6 @@
 resource "digitalocean_kubernetes_cluster" "this" {
-  name     = var.cluster_name
-  region   = var.region
+  name   = var.cluster_name
+  region = var.region
 
   vpc_uuid = digitalocean_vpc.this.id
 
