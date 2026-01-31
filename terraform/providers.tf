@@ -1,1 +1,1 @@
-provider "digitalocean" { }
+provider "digitalocean" {}
