@@ -9,13 +9,30 @@ resource "digitalocean_kubernetes_cluster" "this" {
   surge_upgrade = true
   ha            = false
 
-  # Added Default node pool
+  # Default node pool (small intial + autoscaling)
   node_pool {
-    name       = "system-pool"
+    name       = "small-pool"
     size       = var.nodepool_size
-    node_count = 1
+
+    auto_scale = true
+    min_nodes  = var.small_nodepool_count_min
+    max_nodes  = var.small_nodepool_count_max
+
+     labels = {
+      pool  = "small"
+      phase = "initial"
+      role  = "workload"
+    }
+
+    taint {
+      key    = "workload"
+      value  = "small"
+      effect = "NoSchedule"
+    }
+
     tags = [
-      "role:system",
+      "pool:small",
+      "phase:initial",
       "env:${var.environment}"
     ]
   }
@@ -23,7 +40,7 @@ resource "digitalocean_kubernetes_cluster" "this" {
   tags = [
     "env:${var.environment}",
     "managed-by:terraform",
-    "project:doks"
+    "project:dd-doks"
   ]
 
   lifecycle {

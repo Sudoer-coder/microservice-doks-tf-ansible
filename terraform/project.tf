@@ -3,6 +3,7 @@ resource "digitalocean_project_resources" "this" {
 
   resources = [
     digitalocean_kubernetes_cluster.this.urn,
-    digitalocean_vpc.this.urn
+    digitalocean_firewall.this.urn
   ]
 }
+
