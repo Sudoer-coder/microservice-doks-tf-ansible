@@ -3,8 +3,8 @@ resource "helm_release" "nginx_ingress" {
   namespace = kubernetes_namespace.ingress.metadata[0].name
 
   repository = "https://kubernetes.github.io/ingress-nginx"
-  chart      = "ingress-nginx/ingress-nginx"
-  version    = "4.10.1"
+  chart      = "ingress-nginx"
+  version    = "4.11.3"
 
   create_namespace = false
   cleanup_on_fail  = true
