@@ -1,24 +1,24 @@
-resource "helm_release" "nginx_ingress" {
-  name             = "nginx-ingress"
-  repository       = "https://kubernetes.github.io/ingress-nginx"
-  chart            = "ingress-nginx"
-  namespace        = kubernetes_namespace.ingress.metadata[0].name
-  create_namespace = true
-  version          = "4.9.1" # specify version or omit for latest
+resource "helm_release" "ingress_nginx_controller" { # Changed name slightly
+  name       = "ingress-nginx"
+  repository = "https://kubernetes.github.io/ingress-nginx"
+  chart      = "ingress-nginx"
+  version    = "4.11.3"
 
-  # Common configuration values
+  namespace        = "ingress-nginx"
+  create_namespace = true
+
+  # Ensure Terraform Cloud waits for the cluster to be ready
+  # Replace 'digitalocean_kubernetes_cluster.foo' with your actual cluster resource
+  depends_on = [digitalocean_kubernetes_cluster.your_cluster_resource_name]
+
   set {
     name  = "controller.service.type"
     value = "LoadBalancer"
   }
 
+  # DO Specific: Use a descriptive name for the LB in your DO dashboard
   set {
-    name  = "controller.metrics.enabled"
-    value = "true"
+    name  = "controller.service.annotations.service\\.beta\\.kubernetes\\.io/do-loadbalancer-name"
+    value = "dd-k8s-ingress-lb"
   }
-
-  # Optional: Custom values file
-  # values = [
-  #   file("${path.module}/nginx-ingress-values.yaml")
-  # ]
 }
