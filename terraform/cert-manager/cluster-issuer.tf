@@ -7,8 +7,8 @@ resource "kubernetes_manifest" "letsencrypt_prod" {
     }
     spec = {
       acme = {
-        email  = "info@dubaidirectorymm.com"
         server = "https://acme-v02.api.letsencrypt.org/directory"
+        email  = var.letsencrypt_email
         privateKeySecretRef = {
           name = "letsencrypt-prod"
         }
@@ -22,4 +22,8 @@ resource "kubernetes_manifest" "letsencrypt_prod" {
       }
     }
   }
+
+  depends_on = [
+    helm_release.cert_manager
+  ]
 }

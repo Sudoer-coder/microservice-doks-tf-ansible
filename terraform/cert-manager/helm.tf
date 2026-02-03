@@ -10,5 +10,6 @@ resource "helm_release" "cert_manager" {
     value = "true"
   }
 
-  wait = true
+  wait    = true
+  timeout = 600
 }
