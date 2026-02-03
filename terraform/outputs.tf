@@ -86,5 +86,5 @@ output "argocd_info" {
 
 output "argocd_password_command" {
   description = "Command to get ArgoCD admin password"
-  value       = module.argocd.get_admin_password
+  value       = module.get_admin_password_command
 }
