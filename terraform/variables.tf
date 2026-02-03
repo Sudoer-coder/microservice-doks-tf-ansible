@@ -47,3 +47,22 @@ variable "environment" {
   type = string
 }
 
+variable "db_node_count" {
+  type = number
+}
+
+variable "db_size" {
+  type = string
+}
+
+variable "db_name" {
+  type = string
+}
+
+variable "db_engine" {
+  type = string
+}
+
+variable "db_version" {
+  type = number
+}
