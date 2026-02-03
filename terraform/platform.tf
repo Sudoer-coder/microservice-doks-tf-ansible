@@ -14,6 +14,8 @@ module "ingress_nginx" {
 module "cert_manager" {
   source = "./cert-manager"
 
+  letsencrypt_email = var.letsencrypt_email
+
   depends_on = [
     module.ingress_nginx
   ]
