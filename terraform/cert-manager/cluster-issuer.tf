@@ -9,9 +9,11 @@ resource "kubernetes_manifest" "letsencrypt_prod" {
       acme = {
         server = "https://acme-v02.api.letsencrypt.org/directory"
         email  = var.letsencrypt_email
+
         privateKeySecretRef = {
           name = "letsencrypt-prod"
         }
+
         solvers = [{
           http01 = {
             ingress = {
@@ -24,6 +26,6 @@ resource "kubernetes_manifest" "letsencrypt_prod" {
   }
 
   depends_on = [
-    helm_release.cert_manager
+    time_sleep.wait_for_cert_manager_crds
   ]
 }
