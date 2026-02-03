@@ -4,20 +4,13 @@ resource "kubernetes_ingress_v1" "argocd" {
     namespace = "argocd"
 
     annotations = {
-      "kubernetes.io/ingress.class"              = "nginx"
-      "cert-manager.io/cluster-issuer"           = "letsencrypt-prod"
-      "nginx.ingress.kubernetes.io/ssl-redirect" = "true"
+      "kubernetes.io/ingress.class" = "nginx"
     }
   }
 
   spec {
-    tls {
-      hosts       = ["argocd.example.com"]
-      secret_name = "argocd-tls"
-    }
-
     rule {
-      host = "argocd.example.com"
+      host = "argocd.dubaidirectorymm.com"
 
       http {
         path {
@@ -28,7 +21,7 @@ resource "kubernetes_ingress_v1" "argocd" {
             service {
               name = "argocd-server"
               port {
-                number = 443
+                number = 80
               }
             }
           }
