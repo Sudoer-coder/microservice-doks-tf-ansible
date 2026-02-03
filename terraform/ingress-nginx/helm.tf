@@ -9,7 +9,7 @@ resource "helm_release" "ingress_nginx_controller" { # Changed name slightly
 
   # Ensure Terraform Cloud waits for the cluster to be ready
   # Replace 'digitalocean_kubernetes_cluster.foo' with your actual cluster resource
-  depends_on = [digitalocean_kubernetes_cluster.this]
+  depends_on = [data.digitalocean_kubernetes_cluster.this]
 
   set {
     name  = "controller.service.type"
