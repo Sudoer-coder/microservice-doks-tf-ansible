@@ -13,7 +13,7 @@ resource "helm_release" "cert_manager" {
   }
 
   wait    = true
-  atomic = true
+  atomic  = true
   timeout = 600
 
   depends_on = [
